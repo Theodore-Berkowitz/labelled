@@ -195,10 +195,7 @@ val_labels.svyrep.design <- val_labels.survey.design
         if (all(is.na(x[[var]]))) {
           mode(x[[var]]) <- mode(value[[var]])
         } else {
-          cli::cli_abort(paste(
-            "{.arg x} ({mode(x[[var]])}) and {.arg value} ({mode(value[[var]])})",
-            "must be same type."
-          ))
+          cli::cli_abort(paste("{.var x[[{.str {var}}]]} ({.cls {mode(x[[var]])}}) and {.var value[[{.str {var}}]]} ({.cls {mode(value[[var]])}})", "must be same type."))
         }
       }
       if (typeof(x[[var]]) != typeof(value[[var]])) {
