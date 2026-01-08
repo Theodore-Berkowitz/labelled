@@ -79,6 +79,13 @@ val_labels.svyrep.design <- val_labels.survey.design
     value) {
   null_action <- match.arg(null_action)
   if (!is.null(value) || null_action == "labelled") {
+    if (!is.null(value) && all(is.na(x)) && mode(x) != mode(value)) {
+      cli::cli_warn(c(
+              "Vectors must be same type.",
+        "i" = "Converted {.var x} from {.cls {mode(x)}} to {.cls {mode(value)}}."
+      ))
+      mode(x) <- mode(value)
+    }
     x <- labelled(x, value, label = var_label(x))
   }
   # otherwise do nothing
@@ -192,10 +199,21 @@ val_labels.svyrep.design <- val_labels.survey.design
   for (var in names(value)) {
     if (!is.null(value[[var]])) {
       if (mode(x[[var]]) != mode(value[[var]])) {
-        if (all(is.na(x[[var]]))) {
+        if (!is.null(value[[var]]) && all(is.na(x[[var]])) && mode(x[[var]]) != mode(value[[var]])) {
+          cli::cli_warn(c(
+            "Vectors must be same type.",
+            "i" = "Converted {.var x[[{.str {var}}]]} from {.cls {mode(x[[var]])}} to {.cls {mode(value[[var]])}}."
+          ))
           mode(x[[var]]) <- mode(value[[var]])
         } else {
-          cli::cli_abort(paste("{.var x[[{.str {var}}]]} ({.cls {mode(x[[var]])}}) and {.var value[[{.str {var}}]]} ({.cls {mode(value[[var]])}})", "must be same type."))
+          cli::cli_abort(c(
+            "Vectors must be same type.",
+            "x" = paste(
+              "{.var x[[{.str {var}}]]} is {.cls {mode(x[[var]])}}",
+              "but",
+              "{.var value[[{.str {var}}]]} is {.cls {mode(value[[var]])}}."
+            )
+          ))
         }
       }
       if (typeof(x[[var]]) != typeof(value[[var]])) {
